@@ -46,7 +46,7 @@ const messages = [
 可用工具：
 - read_file: 读取文件内容（使用此工具来获取文件内容）
 `),
-  new HumanMessage('请读取 src/tool-file-read.mjs 文件内容并解释代码')
+  new HumanMessage('请读取 ./src/tool-file-read.mjs 文件内容并解释代码')
 ];
 
 let response = await modelWithTools.invoke(messages);
@@ -92,3 +92,5 @@ while (response.tool_calls && response.tool_calls.length > 0) {
 
 console.log('\n[最终回复]');
 console.log(response.content);
+
+
