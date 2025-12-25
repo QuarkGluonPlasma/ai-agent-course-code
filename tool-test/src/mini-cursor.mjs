@@ -76,6 +76,7 @@ async function runAgentWithTools(query, maxIterations = 30) {
     return messages[messages.length - 1].content;
 }
 
+// echo 在 windows 可能不支持，可以去掉 echo 试试，不一定需要用户选择，或者换成 windows 的命令写法
 const case1 = `创建一个功能丰富的 React TodoList 应用：
 
 1. 创建项目：echo -e "n\nn" | pnpm create vite react-todo-app --template react-ts

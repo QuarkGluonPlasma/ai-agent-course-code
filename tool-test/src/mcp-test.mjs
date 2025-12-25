@@ -19,26 +19,33 @@ const mcpClient = new MultiServerMCPClient({
             args: [
                 "/Users/guang/code/tool-test/src/my-mcp-server.mjs"
             ]
-        }
+        },
+        "amap-maps-streamableHTTP": {
+            "url": "https://mcp.amap.com/mcp?key=" + process.env.AMAP_MAPS_API_KEY
+        },
+        "filesystem": {
+            "command": "npx",
+            "args": [
+              "-y",
+              "@modelcontextprotocol/server-filesystem",
+              ...(process.env.ALLOWED_PATHS.split(',') || [])
+            ]
+        },
+        "chrome-devtools": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "chrome-devtools-mcp@latest"
+            ]
+        },
     }
 });
 
 const tools = await mcpClient.getTools();
 const modelWithTools = model.bindTools(tools);
 
-const res = await mcpClient.listResources();
-
-let resourceContent = '';
-for (const [serverName, resources] of Object.entries(res)) {
-    for (const resource of resources) {
-        const content = await mcpClient.readResource(serverName, resource.uri);
-        resourceContent += content[0].text;
-    }
-}
-
 async function runAgentWithTools(query, maxIterations = 30) {
     const messages = [
-        new SystemMessage(resourceContent),
         new HumanMessage(query)
     ];
 
@@ -60,8 +67,18 @@ async function runAgentWithTools(query, maxIterations = 30) {
             const foundTool = tools.find(t => t.name === toolCall.name);
             if (foundTool) {
                 const toolResult = await foundTool.invoke(toolCall.args);
+                
+                // 确保 content 是字符串类型
+                let contentStr;
+                if (typeof toolResult === 'string') {
+                    contentStr = toolResult;
+                } else if (toolResult && toolResult.text) {
+                    // 如果返回对象有 text 字段，优先使用
+                    contentStr = toolResult.text;
+                }
+                                
                 messages.push(new ToolMessage({
-                    content: toolResult,
+                    content: contentStr,
                     tool_call_id: toolCall.id,
                 }));
             }
@@ -71,8 +88,8 @@ async function runAgentWithTools(query, maxIterations = 30) {
     return messages[messages.length - 1].content;
 }
 
+// await runAgentWithTools("北京南站附近的5个酒店，以及去的路线");
+// await runAgentWithTools("北京南站附近的5个酒店，以及去的路线，路线规划生成文档保存到 /Users/guang/Desktop 的一个 md 文件");
+await runAgentWithTools("北京南站附近的酒店，最近的 3 个酒店，拿到酒店图片，打开浏览器，展示每个酒店的图片，每个 tab 一个 url 展示，并且在把那个页面标题改为酒店名");
 
-await runAgentWithTools("查一下用户 002 的信息");
-// await runAgentWithTools("MCP Server 的使用指南是什么");
-
-await mcpClient.close();
+// await mcpClient.close();

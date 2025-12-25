@@ -9,7 +9,6 @@ const model = new ChatOpenAI({
   modelName: process.env.MODEL_NAME || "qwen-coder-turbo",
   apiKey: process.env.OPENAI_API_KEY,
   temperature: 0,
-  verbose: true,
   configuration: {
       baseURL: process.env.OPENAI_BASE_URL,
   },

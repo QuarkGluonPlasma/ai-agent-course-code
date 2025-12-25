@@ -50,6 +50,7 @@ const writeFileTool = tool(
 );
 
 // 3. 执行命令工具（带实时输出）
+// echo 在 windows 可能不支持，可以设置 shell: 'powershell.exe'
 const executeCommandTool = tool(
   async ({ command, workingDirectory }) => {
     const cwd = workingDirectory || process.cwd();

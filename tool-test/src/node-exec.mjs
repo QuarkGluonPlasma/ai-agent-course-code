@@ -1,5 +1,6 @@
 import { spawn } from 'node:child_process';
 
+// echo 在 windows 可能不支持，可以设置 shell: 'powershell.exe'
 const command = 'echo -e "n\nn" | pnpm create vite react-todo-app --template react-ts';
 const cwd = process.cwd();
 // 解析命令和参数
