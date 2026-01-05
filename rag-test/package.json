@@ -12,8 +12,11 @@
   "type": "commonjs",
   "dependencies": {
     "@langchain/classic": "^1.0.7",
+    "@langchain/community": "^1.1.1",
     "@langchain/core": "^1.1.8",
     "@langchain/openai": "^1.2.0",
+    "@langchain/textsplitters": "^1.0.1",
+    "cheerio": "^1.1.2",
     "dotenv": "^17.2.3"
   }
 }
