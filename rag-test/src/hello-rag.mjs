@@ -137,6 +137,7 @@ ${context}
 
 老师的回答:`;
   
+  // 直接使用 model.invoke
   console.log("\n【AI 回答】");
   const response = await model.invoke(prompt);
   console.log(response.content);

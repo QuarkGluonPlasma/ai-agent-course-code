@@ -42,6 +42,9 @@ const textSplitter = new RecursiveCharacterTextSplitter({
 
 const splitDocuments = await textSplitter.splitDocuments(documents);
 
+console.log(splitDocuments);
+
+
 console.log(`文档分割完成，共 ${splitDocuments.length} 个分块\n`);
 
 console.log("正在创建向量存储...");
@@ -63,21 +66,16 @@ for (const question of questions) {
   console.log(`问题: ${question}`);
   console.log("=".repeat(80));
   
-  // 使用 retriever 获取相关文档
-  const retrievedDocs = await retriever.invoke(question);
+  // 使用 similaritySearchWithScore 获取文档和相似度评分（一次调用即可）
+  const scoredResults = await vectorStore.similaritySearchWithScore(question, 2);
   
-  // 使用 similaritySearchWithScore 获取相似度评分
-  const scoredResults = await vectorStore.similaritySearchWithScore(question, 3);
+  // 从 scoredResults 中提取文档和评分
+  const retrievedDocs = scoredResults.map(([doc]) => doc);
   
   // 打印检索到的文档和相似度评分
   console.log("\n【检索到的文档及相似度评分】");
-  retrievedDocs.forEach((doc, i) => {
-    // 找到对应的评分
-    const scoredResult = scoredResults.find(([scoredDoc]) => 
-      scoredDoc.pageContent === doc.pageContent
-    );
-    const score = scoredResult ? scoredResult[1] : null;
-    const similarity = score !== null ? (1 - score).toFixed(4) : "N/A";
+  scoredResults.forEach(([doc, score], i) => {
+    const similarity = (1 - score).toFixed(4);
     
     console.log(`\n[文档 ${i + 1}] 相似度: ${similarity}`);
     console.log(`内容: ${doc.pageContent}`);
